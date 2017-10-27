@@ -6,4 +6,4 @@
   post_tasks:
     - import_tasks: post.yml
   roles:
-      - ../../
+    - role_under_test
