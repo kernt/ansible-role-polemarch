@@ -7,4 +7,3 @@
     - import_tasks: post.yml
   roles:
       - ../../
-      - role: role_under_test
