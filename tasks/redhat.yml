@@ -1,0 +1,66 @@
+---
+- name: polemarch | enable epel repo
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - epel-release
+
+- name: polemarch | install dependencies
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - libselinux-python
+- name: polemarch | Check if polemarch is installed
+  command: "rpm -q {{ polemarch_redhat_package_name }}"
+  register: polemarch_check_rpm
+  failed_when: polemarch_check_rpm.rc > 1
+  changed_when: polemarch_check_rpm.rc == 1
+  become: true
+
+- name: polemarch | Download install file
+  get_url:
+    url: "{{ polemarch_download_url }}{{ polemarch_redhat_package_name }}"
+    dest: /tmp
+  when: polemarch_check_rpm.rc == 1
+
+- name: polemarch | Install polemarch
+  yum:
+     name: "/tmp/{{ polemarch_redhat_package_name }}"
+     state: present
+  notify:
+    - start polemarch
+    - start polemarch worker
+  when: polemarch_check_rpm.rc == 1
+  become: true
+
+- name: polemarch | Configure polemarch
+  template:
+    src: settings.ini.j2
+    dest: /etc/polemarch/settings.ini
+  notify:
+    - restart polemarch
+    - restart polemarch worker
+  become: true
+
+- name: polemarch | Create symlink
+  file:
+    src: /opt/polemarch/bin/polemarchctl
+    dest: /usr/bin/polemarch
+    state: link
+  become: true
+
+- name: polemarch | Migrate database
+  command: /usr/bin/polemarch migrate
+  notify:
+    - restart polemarch
+    - restart polemarch worker
+  become: true
+
+- name: polemarch | Set sqlite3 database permissions
+  file:
+    path: "{{ polemarch_config_db_name }}"
+    owner: polemarch
+    group: polemarch
+  when: polemarch_config_db_engine == 'django.db.backends.sqlite3'

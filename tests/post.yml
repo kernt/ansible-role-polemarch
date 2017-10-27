@@ -1,0 +1,10 @@
+# post test file for polemarch
+---
+- name: Perform a GET and Store Output
+  uri:
+    url: http://127.0.0.1:8080/login
+    return_content: yes
+  register: webpage
+
+- fail: msg='test failed'
+  when: "'Polemarch Dashboard' not in webpage.content"

@@ -1,0 +1,20 @@
+---
+galaxy_info:
+    author: miguelenes
+    description: Provisions Polemarch
+    license: GPL
+    min_ansible_version: 2.0
+    github_branch: master
+    platforms:
+        - name: EL
+          versions:
+              - 7
+        - name: Debian
+          versions:
+              - stretch
+    galaxy_tags:
+        - networking
+        - system
+        - provisioning
+
+dependencies: []

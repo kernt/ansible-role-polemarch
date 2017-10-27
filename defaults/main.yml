@@ -1,0 +1,51 @@
+---
+polemarch_version: "0.0.9"
+polemarch_redhat_package_name: "polemarch-{{ polemarch_version }}-0.x86_64.rpm"
+polemarch_debian_package_name: "polemarch_{{ polemarch_version }}-0_amd64.deb"
+polemarch_download_url: "https://github.com/vstconsulting/polemarch/releases/download/{{ polemarch_version }}/"
+
+# Polemarch configurations
+#
+# main
+polemarch_config_debug: true
+polemarch_config_log_level: "WARNING"
+polemarch_config_timezone: "UTC"
+polemarch_config_projects_dir: "/home/polemarch/projects"
+
+# database
+polemarch_config_db_engine: "django.db.backends.sqlite3"
+polemarch_config_db_name: "/home/polemarch/db.sqlite3"
+polemarch_config_db_timeout: 10
+polemarch_config_db_user: ""
+polemarch_config_db_password: ""
+polemarch_config_db_host: ""
+polemarch_config_db_port: ""
+
+# cache
+polemarch_config_cache_engine: "django.core.cache.backends.filebased.FileBasedCache"
+polemarch_config_cache_location: "{TMP}/polemarch_django_cache{PY}"
+
+# locks
+polemarch_config_locks_engine: "django.core.cache.backends.filebased.FileBasedCache"
+polemarch_config_locks_location: "{TMP}/polemarch_django_cache_locks{PY}"
+
+# rpc
+polemarch_config_rpc_connection: "filesystem:///tmp"
+polemarch_config_rpc_result_backend: "file:///tmp"
+polemarch_config_rpc_heartbeat: 5
+polemarch_config_rpc_results_expiry_days: 1
+polemarch_config_rpc_concurrency: 4
+
+# web
+polemarch_config_web_allowed_hosts: "*"
+polemarch_config_web_static_files_url: "/static/"
+polemarch_config_web_rest_page_limit: 1000
+
+# uwsgi
+polemarch_config_uwsgi_processes: 4
+polemarch_config_uwsgi_threads: 2
+polemarch_config_uwsgi_static_map: "/static=/opt/polemarch/lib/python2.7/site-packages/polemarch/static"
+polemarch_config_uwsgi_pid: "/var/run/polemarch/web.pid"
+polemarch_config_uwsgi_daemonize: "/var/log/polemarch/web.log"
+
+

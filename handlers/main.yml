@@ -1,0 +1,21 @@
+# handlers file for polemarch
+---
+- name: start polemarch
+  service:
+    name: polemarchweb
+    state: started
+
+- name: start polemarch worker
+  service:
+    name: polemarchworker
+    state: started
+
+- name: restart polemarch
+  service:
+    name: polemarchweb
+    state: restarted
+
+- name: restart polemarch worker
+  service:
+    name: polemarchworker
+    state: restarted

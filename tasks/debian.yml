@@ -1,0 +1,73 @@
+---
+- name:  polemarch | Install dependencies
+  apt:
+    name: "{{ item }}"
+    state: "{{ apt_install_state | default('latest') }}"
+    update_cache: true
+    cache_valid_time: "{{ apt_update_cache_valid_time | default(3600) }}"
+  with_items:
+    - python
+    - curl
+
+- name:  polemarch | Download libssl1.0-dev for Debian Stretch
+  get_url:
+    url: "http://ftp.us.debian.org/debian/pool/main/o/openssl/libssl1.0.0_1.0.2l-1~bpo8+1_amd64.deb"
+    dest: /tmp
+  when: ansible_distribution_major_version == '9'
+
+- name: polemarch | Install libssl1.0-dev for Debian Stretch
+  apt:
+    deb: "/tmp/libssl1.0.0_1.0.2l-1~bpo8+1_amd64.deb"
+  when: ansible_distribution_major_version == '9'
+
+- name: polemarch | Check if polemarch is installed
+  command: dpkg-query -W polemarch
+  register: polemarch_check_deb
+  failed_when: polemarch_check_deb.rc > 1
+  changed_when: polemarch_check_deb.rc == 1
+  become: true
+
+- name: polemarch | Download install file
+  get_url:
+    url: "{{ polemarch_download_url }}{{ polemarch_debian_package_name }}"
+    dest: /tmp
+  when: polemarch_check_deb.rc == 1
+
+- name: polemarch | Install polemarch
+  apt:
+    deb: "/tmp/{{ polemarch_debian_package_name }}"
+  notify:
+    - restart polemarch
+    - restart polemarch worker
+  when: polemarch_check_deb.rc == 1
+  become: true
+
+- name: polemarch | Configure polemarch
+  template:
+    src: settings.ini.j2
+    dest: /etc/polemarch/settings.ini
+  notify:
+    - restart polemarch
+    - restart polemarch worker
+  become: true
+
+- name: polemarch | Create symlink
+  file:
+    src: /opt/polemarch/bin/polemarchctl
+    dest: /usr/bin/polemarch
+    state: link
+  become: true
+
+- name: polemarch | Migrate database
+  command: /usr/bin/polemarch migrate
+  become: true
+  notify:
+    - restart polemarch
+    - restart polemarch worker
+
+- name: polemarch | Set sqlite3 database permissions
+  file:
+    path: "{{ polemarch_config_db_name }}"
+    owner: polemarch
+    group: polemarch
+  when: polemarch_config_db_engine == 'django.db.backends.sqlite3'

@@ -1,0 +1,12 @@
+---
+
+galaxy_name: miguelenes.role-polemarch
+github_user: miguelenes
+github_name: ansible-role-polemarch
+badges: |
+  [![Build Status](https://img.shields.io/travis/miguelenes/ansible-role-polemarch.svg)](https://travis-ci.org/miguelenes/ansible-role-polemarch)
+  [![Galaxy](http://img.shields.io/badge/galaxy-miguelenes.role-polemarch-blue.svg)](https://galaxy.ansible.com/miguelenes/role-polemarch)
+  [![GitHub Tags](https://img.shields.io/github/tag/miguelenes/ansible-role-polemarch.svg)](https://github.com/miguelenes/ansible-role-polemarch)
+  [![GitHub Stars](https://img.shields.io/github/stars/miguelenes/ansible-role-polemarch.svg)](https://github.com/miguelenes/ansible-role-polemarch)
+description: |
+  > * installs polemarch web ui for ansible
