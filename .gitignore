@@ -23,7 +23,6 @@ Thumbs.db
 .virtualbox/
 .vagrant/
 vagrant_ansible_inventory_*
-ansible.cfg
 
 # Kitchen files #
 .kitchen/
