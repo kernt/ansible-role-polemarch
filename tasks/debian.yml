@@ -67,7 +67,7 @@
   with_items:
     - regexp: "^timeout.?=.+$"
       line: "#timeout ="
-  when: "{{ polemarch_config_db_engine }}" == "django.db.backends.mysql"
+  when: polemarch_config_db_engine == "django.db.backends.mysql"
   notify:
     - restart polemarch
     - restart polemarch worker
