@@ -42,8 +42,18 @@
   with_items:
     - regexp: "^debug.?=.+$"
       line: "debug = {{ polemarch_config_debug }}"
-    - regexp: "^debug.?=.+$"
-      line: "debug = {{ polemarch_config_debug }}"
+    - regexp: "^engine.?=.+$"
+      line: "engine = {{ polemarch_config_db_engine }}"
+    - regexp: "^name.?=.+$"
+      line: "name = {{ polemarch_config_db_name }}"
+    - regexp: "^user.?=.+$"
+      line: "user = {{ polemarch_config_db_user }}"
+    - regexp: "^password.?=.+$"
+      line: "password = {{ polemarch_config_db_password }}"
+    - regexp: "^host.?=.+$"
+      line: "host = {{ polemarch_config_db_host }}"
+    - regexp: "^port.?=.+$"
+      line: "port = {{ polemarch_config_db_port }}"
   notify:
     - restart polemarch
     - restart polemarch worker
