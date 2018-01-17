@@ -33,6 +33,21 @@
     dest: /tmp
   when: polemarch_check_deb.rc == 1
 
+- name: polemarch | configure
+  lineinfile:
+    dest: "/etc/polemarch/settings.ini"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  with_items:
+    - regexp: "^debug.?=.+$"
+      line: "debug = {{ polemarch_config_debug }}"
+    - regexp: "^debug.?=.+$"
+      line: "debug = {{ polemarch_config_debug }}"
+  notify:
+    - restart polemarch
+    - restart polemarch worker
+
 - name: polemarch | Install polemarch
   apt:
     deb: "/tmp/{{ polemarch_debian_package_name }}"
