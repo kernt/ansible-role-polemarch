@@ -42,15 +42,6 @@
   when: polemarch_check_deb.rc == 1
   become: true
 
-- name: polemarch | Configure polemarch
-  template:
-    src: settings.ini.j2
-    dest: /etc/polemarch/settings.ini
-  notify:
-    - restart polemarch
-    - restart polemarch worker
-  become: true
-
 - name: polemarch | Create symlink
   file:
     src: /opt/polemarch/bin/polemarchctl
