@@ -58,6 +58,20 @@
     - restart polemarch
     - restart polemarch worker
 
+- name: polemarch | configure
+  lineinfile:
+    dest: "/etc/polemarch/settings.ini"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  with_items:
+    - regexp: "^timeout.?=.+$"
+      line: "#timeout ="
+  when: "{{ polemarch_config_db_engine }}" == "django.db.backends.mysql"
+  notify:
+    - restart polemarch
+    - restart polemarch worker
+
 - name: polemarch | Install polemarch
   apt:
     deb: "/tmp/{{ polemarch_debian_package_name }}"
