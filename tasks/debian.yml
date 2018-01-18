@@ -54,6 +54,14 @@
       line: "host = {{ polemarch_config_db_host }}"
     - regexp: "^port.?=.+$"
       line: "port = {{ polemarch_config_db_port }}"
+    - regexp: "^backend.?=.+$"
+      line: "backend = {{ polemarch_config_cache_engine }}"
+    - regexp: "^location.?=.+$"
+      line: "location = {{ polemarch_config_cache_location }}"
+    - regexp: "^backend.?=.+$"
+      line: "backend = {{ polemarch_config_cache_engine }}"
+    - regexp: "^location.?=.+$"
+      line: "location = {{ polemarch_config_cache_location }}"
   notify:
     - restart polemarch
     - restart polemarch worker
