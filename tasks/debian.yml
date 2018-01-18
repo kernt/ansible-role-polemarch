@@ -31,54 +31,7 @@
   get_url:
     url: "{{ polemarch_download_url }}{{ polemarch_debian_package_name }}"
     dest: /tmp
-  when: polemarch_check_deb.rc == 1
-
-- name: polemarch | configure
-  lineinfile:
-    dest: "/etc/polemarch/settings.ini"
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-    state: present
-  with_items:
-    - regexp: "^debug.?=.+$"
-      line: "debug = {{ polemarch_config_debug }}"
-    - regexp: "^engine.?=.+$"
-      line: "engine = {{ polemarch_config_db_engine }}"
-    - regexp: "^name.?=.+$"
-      line: "name = {{ polemarch_config_db_name }}"
-    - regexp: "^user.?=.+$"
-      line: "user = {{ polemarch_config_db_user }}"
-    - regexp: "^password.?=.+$"
-      line: "password = {{ polemarch_config_db_password }}"
-    - regexp: "^host.?=.+$"
-      line: "host = {{ polemarch_config_db_host }}"
-    - regexp: "^port.?=.+$"
-      line: "port = {{ polemarch_config_db_port }}"
-    - regexp: "^backend.?=.+$"
-      line: "backend = {{ polemarch_config_cache_engine }}"
-    - regexp: "^location.?=.+$"
-      line: "location = {{ polemarch_config_cache_location }}"
-    - regexp: "^backend.?=.+$"
-      line: "backend = {{ polemarch_config_cache_engine }}"
-    - regexp: "^location.?=.+$"
-      line: "location = {{ polemarch_config_cache_location }}"
-  notify:
-    - restart polemarch
-    - restart polemarch worker
-
-- name: polemarch | configure
-  lineinfile:
-    dest: "/etc/polemarch/settings.ini"
-    regexp: "{{ item.regexp }}"
-    line: "{{ item.line }}"
-    state: present
-  with_items:
-    - regexp: "^timeout.?=.+$"
-      line: "#timeout ="
-  when: polemarch_config_db_engine == "django.db.backends.mysql"
-  notify:
-    - restart polemarch
-    - restart polemarch worker
+  when: polemarch_version not in polemarch_check_deb.stdout
 
 - name: polemarch | Install polemarch
   apt:
@@ -86,8 +39,59 @@
   notify:
     - restart polemarch
     - restart polemarch worker
-  when: polemarch_check_deb.rc == 1
+  when: polemarch_version not in polemarch_check_deb.stdout
   become: true
+
+- file: dest=/opt/polemarch/lib/python2.7/site-packages/polemarch/projects owner=polemarch group=polemarch mode=0755 recurse=yes
+
+- name: polemarch | configure
+  lineinfile:
+    dest: "/etc/polemarch/settings.ini"
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    insertafter: "{{ item.insertafter }}"
+    state: present
+  with_items:
+    - regexp: "# debug = true"
+      line: "debug = {{ polemarch_config_debug }}"
+      insertafter: ""
+    - regexp: "# timezone = UTC"
+      line: "timezone = {{ polemarch_config_timezone }}"
+      insertafter: ""
+    - regexp: "# engine = django.db.backends.sqlite3"
+      line: "engine = {{ polemarch_config_db_engine }}"
+      insertafter: ""
+    - regexp: "# name = {HOME}/db.sqlite3"
+      line: "name = {{ polemarch_config_db_name }}"
+      insertafter: ""
+    - regexp: "^user.?=.+$"
+      line: "user = {{ polemarch_config_db_user }}"
+      insertafter: "name = {{ polemarch_config_db_name }}"
+    - regexp: "^password.?=.+$"
+      line: "password = {{ polemarch_config_db_password }}"
+      insertafter: "user = {{ polemarch_config_db_user }}"
+    - regexp: "^host.?=.+$"
+      line: "host = {{ polemarch_config_db_host }}"
+      insertafter: "password = {{ polemarch_config_db_password }}"
+    - regexp: "^port.?=.+$"
+      line: "port = {{ polemarch_config_db_port }}"
+      insertafter: "host = {{ polemarch_config_db_host }}"
+    - regexp: "# backend = django.core.cache.backends.filebased.FileBasedCache"
+      line: "backend = {{ polemarch_config_cache_engine }}"
+      insertafter: ""
+    - regexp: "# location = {TMP}/polemarch_django_cache{PY}"
+      line: "location = {{ polemarch_config_cache_location }}"
+      insertafter: ""
+    - regexp: "# backend = django.core.cache.backends.filebased.FileBasedCache"
+      line: "backend = {{ polemarch_config_cache_engine }}"
+      insertafter: ""
+    - regexp: "# location = {TMP}/polemarch_django_cache_locks{PY}"
+      line: "location = {{ polemarch_config_cache_location }}"
+      insertafter: ""
+  when: polemarch_version not in polemarch_check_deb.stdout
+  notify:
+    - restart polemarch
+    - restart polemarch worker
 
 - name: polemarch | Create symlink
   file:
@@ -102,10 +106,4 @@
   notify:
     - restart polemarch
     - restart polemarch worker
-
-- name: polemarch | Set sqlite3 database permissions
-  file:
-    path: "{{ polemarch_config_db_name }}"
-    owner: polemarch
-    group: polemarch
-  when: polemarch_config_db_engine == 'django.db.backends.sqlite3'
+  when: polemarch_version not in polemarch_check_deb.stdout
