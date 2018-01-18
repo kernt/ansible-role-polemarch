@@ -43,6 +43,7 @@
   become: true
 
 - file: dest=/opt/polemarch/lib/python2.7/site-packages/polemarch/projects owner=polemarch group=polemarch mode=0755 recurse=yes
+  when: polemarch_version not in polemarch_check_deb.stdout
 
 - name: polemarch | configure
   lineinfile:
